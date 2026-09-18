@@ -183,3 +183,11 @@ compatibility question, and real type safety at call sites rather than loose
 string constants. The invariant the standard protects — permission strings are
 never raw literals — is unchanged. Enum cases are compared by `->value` when a
 string is required.
+
+**5. No `SoftDeletes` on the `Permission` model.**
+`models.md` states that all main entity models use SoftDeletes. Permissions are
+not user-managed data — they are defined by the `PermissionSlug` enum and
+reconciled by `permissions:sync`, which prunes rows for cases that no longer
+exist. A soft-deleted row would keep occupying its unique `slug` and collide if
+that permission were ever reintroduced, so pruning is a hard delete. `Role`,
+which users do manage, keeps SoftDeletes.
