@@ -191,3 +191,13 @@ reconciled by `permissions:sync`, which prunes rows for cases that no longer
 exist. A soft-deleted row would keep occupying its unique `slug` and collide if
 that permission were ever reintroduced, so pruning is a hard delete. `Role`,
 which users do manage, keeps SoftDeletes.
+
+**6. `auth/register` and `auth/login` are not behind `$this->authorize()`.**
+`controllers.md` requires an `authorize()` call at the start of every controller
+method and allows no unprotected endpoints. These two cannot comply: their
+purpose is to issue the token every other endpoint requires. They are protected
+by rate limiting instead (`throttle:6,1`), registration always assigns the
+`customer` role and never reads a role from the payload, and login returns one
+identical error for a wrong password and an unknown address so it cannot be used
+to enumerate accounts. Every other endpoint in the API is inside the
+`auth:sanctum` group and calls a Policy.

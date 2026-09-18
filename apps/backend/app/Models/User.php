@@ -71,6 +71,25 @@ class User extends Authenticatable
     }
 
     /**
+     * Every permission slug this user holds, flattened across their roles.
+     *
+     * For sending to the frontend so it can hide UI. Authorization itself goes
+     * through hasPermissions(), which is stricter: it requires a single role to
+     * carry the whole set.
+     *
+     * @return array<int, string>
+     */
+    public function permissionSlugs(): array
+    {
+        return $this->roles
+            ->loadMissing('permissions')
+            ->flatMap(fn (Role $role) => $role->permissions->pluck('slug'))
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    /**
      * @param  array<int, RoleSlug|string>|RoleSlug|string  $roles
      */
     public function hasRoles(array|RoleSlug|string $roles): bool

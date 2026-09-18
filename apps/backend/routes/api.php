@@ -1,10 +1,10 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Carts\CartController;
 use App\Http\Controllers\Carts\CartItemController;
 use App\Http\Controllers\Products\ProductCategoryController;
 use App\Http\Controllers\Products\ProductController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,8 +19,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/*
+ * Registration and login are the only unauthenticated endpoints in the API.
+ * They cannot be behind auth:sanctum - they exist to issue the token that
+ * everything else requires - so they are rate limited instead: six attempts
+ * per minute per IP, which stops credential stuffing without inconveniencing
+ * anyone typing their own password.
+ */
+Route::middleware('throttle:6,1')->group(function () {
+    Route::post('auth/register', [AuthController::class, 'register']);
+    Route::post('auth/login', [AuthController::class, 'login']);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', fn (Request $request) => $request->user());
+    Route::post('auth/logout', [AuthController::class, 'logout']);
+    Route::get('auth/me', [AuthController::class, 'me']);
 
     // Product categories
     Route::get('product-categories', [ProductCategoryController::class, 'index']);
