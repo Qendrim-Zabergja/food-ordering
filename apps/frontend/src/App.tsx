@@ -9,7 +9,6 @@ import { OrderDetail } from './pages/OrderDetail'
 import { Orders } from './pages/Orders'
 import { Register } from './pages/Register'
 import { AdminCategories } from './pages/admin/AdminCategories'
-import { AdminOrders } from './pages/admin/AdminOrders'
 import { AdminProducts } from './pages/admin/AdminProducts'
 import { PermissionSlug } from './enums/PermissionSlug'
 import { RouteName } from './enums/RouteName'
@@ -86,16 +85,7 @@ export default function App() {
         />
 
         {/* Admin area ----------------------------------------------------- */}
-        <Route path={RouteName.ADMIN} element={<Navigate to={RouteName.ADMIN_ORDERS} replace />} />
-
-        <Route
-          path={RouteName.ADMIN_ORDERS}
-          element={
-            <RequirePermission permission={PermissionSlug.MANAGE_ORDERS}>
-              <AdminOrders />
-            </RequirePermission>
-          }
-        />
+        <Route path={RouteName.ADMIN} element={<Navigate to={RouteName.ADMIN_PRODUCTS} replace />} />
 
         <Route
           path={RouteName.ADMIN_PRODUCTS}

@@ -8,21 +8,15 @@ function linkClass({ isActive }: { isActive: boolean }): string {
 }
 
 /**
- * Each tab appears only for someone holding the matching permission, so an
- * administrator who can manage orders but not the menu is not shown a section
- * the API would refuse anyway.
+ * The admin area covers the menu only - orders are managed from the Orders page,
+ * where an administrator already sees every order. Each tab appears only for
+ * someone holding the matching permission.
  */
 export function AdminNav() {
   const { can } = useAuth()
 
   return (
     <nav className="admin-nav">
-      {can(PermissionSlug.MANAGE_ORDERS) ? (
-        <NavLink to={RouteName.ADMIN_ORDERS} className={linkClass}>
-          Orders
-        </NavLink>
-      ) : null}
-
       {can(PermissionSlug.MANAGE_PRODUCTS) ? (
         <NavLink to={RouteName.ADMIN_PRODUCTS} className={linkClass}>
           Products

@@ -50,9 +50,16 @@ export function Layout() {
                   Orders
                 </NavLink>
 
-                {can(PermissionSlug.MANAGE_PRODUCTS) || can(PermissionSlug.MANAGE_ORDERS) ? (
-                  <NavLink to={RouteName.ADMIN_ORDERS} className={navClass}>
-                    Admin
+                {/*
+                  "Manage menu" rather than "Admin": orders are handled from the
+                  Orders page now, so this section edits one thing - the menu the
+                  customer browses. "Admin" only said who it was for, and the link
+                  is already hidden from anyone without the permission.
+                */}
+                {can(PermissionSlug.MANAGE_PRODUCTS) ||
+                can(PermissionSlug.MANAGE_PRODUCT_CATEGORIES) ? (
+                  <NavLink to={RouteName.ADMIN_PRODUCTS} className={navClass}>
+                    Manage menu
                   </NavLink>
                 ) : null}
               </nav>

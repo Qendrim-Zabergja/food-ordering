@@ -389,3 +389,77 @@ describe('lifecycle visibility', function () {
             ->toBe([true, true, true, true, true]);
     });
 });
+
+describe('the needs-attention view', function () {
+    beforeEach(function () {
+        Sanctum::actingAs($this->admin);
+    });
+
+    it('filters to orders placed today', function () {
+        Order::factory()->count(2)->create(['placed_at' => now()]);
+        Order::factory()->create(['placed_at' => now()->subDay()]);
+        Order::factory()->create(['placed_at' => now()->subWeek()]);
+
+        $this->getJson('/api/orders?filter[placed_on]=today')
+            ->assertOk()
+            ->assertJsonCount(2, 'data');
+    });
+
+    it('accepts an explicit date as well as today', function () {
+        Order::factory()->create(['placed_at' => now()->subDay()]);
+        Order::factory()->create(['placed_at' => now()]);
+
+        $yesterday = now()->subDay()->toDateString();
+
+        $this->getJson("/api/orders?filter[placed_on]={$yesterday}")
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+    });
+
+    it('excludes the statuses it is given', function () {
+        Order::factory()->create(['status' => OrderStatus::PENDING]);
+        Order::factory()->create(['status' => OrderStatus::PREPARING]);
+        Order::factory()->create(['status' => OrderStatus::COMPLETED]);
+        Order::factory()->create(['status' => OrderStatus::CANCELLED]);
+
+        $this->getJson('/api/orders?filter[exclude_status][]=completed&filter[exclude_status][]=cancelled')
+            ->assertOk()
+            ->assertJsonCount(2, 'data');
+    });
+
+    it('combines both into today\'s unfinished orders', function () {
+        // Today, still open - the only two that should come back
+        Order::factory()->create(['placed_at' => now(), 'status' => OrderStatus::PENDING]);
+        Order::factory()->create(['placed_at' => now(), 'status' => OrderStatus::DELIVERING]);
+
+        // Today but finished
+        Order::factory()->create(['placed_at' => now(), 'status' => OrderStatus::COMPLETED]);
+        Order::factory()->create(['placed_at' => now(), 'status' => OrderStatus::CANCELLED]);
+
+        // Open, but not today
+        Order::factory()->create(['placed_at' => now()->subDay(), 'status' => OrderStatus::PENDING]);
+
+        $this->getJson('/api/orders?filter[placed_on]=today&filter[exclude_status][]=completed&filter[exclude_status][]=cancelled')
+            ->assertOk()
+            ->assertJsonCount(2, 'data');
+    });
+
+    it('ignores an unrecognised status in exclude_status rather than filtering everything out', function () {
+        Order::factory()->count(3)->create();
+
+        $this->getJson('/api/orders?filter[exclude_status][]=not-a-status')
+            ->assertOk()
+            ->assertJsonCount(3, 'data');
+    });
+
+    it('still scopes a customer to their own orders when they use the filters', function () {
+        Order::factory()->create(['user_id' => $this->customer->id, 'placed_at' => now()]);
+        Order::factory()->count(2)->create(['placed_at' => now()]);
+
+        Sanctum::actingAs($this->customer);
+
+        $this->getJson('/api/orders?filter[placed_on]=today')
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+    });
+});

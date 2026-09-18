@@ -19,7 +19,6 @@ export const RouteName = {
   ADMIN: '/admin',
   ADMIN_PRODUCTS: '/admin/products',
   ADMIN_CATEGORIES: '/admin/categories',
-  ADMIN_ORDERS: '/admin/orders',
 } as const
 
 export type RouteName = (typeof RouteName)[keyof typeof RouteName]

@@ -6,6 +6,9 @@ import type { ApiPayload } from '../models/Model'
 export interface OrderFilters {
   search?: string
   status?: OrderStatus | OrderStatus[]
+  /** A date, or the literal 'today' which the API resolves server-side. */
+  placed_on?: string
+  exclude_status?: OrderStatus[]
   with?: string[]
   sort?: string
   limit?: number
