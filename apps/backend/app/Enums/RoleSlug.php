@@ -30,4 +30,23 @@ enum RoleSlug: string
     {
         return [self::ADMIN];
     }
+
+    /**
+     * The permissions a role holds by default.
+     *
+     * A customer needs read access to the catalogue to be able to order from it.
+     * Admin is empty here because permissions:sync grants it everything.
+     *
+     * @return array<int, PermissionSlug>
+     */
+    public function defaultPermissions(): array
+    {
+        return match ($this) {
+            self::ADMIN => [],
+            self::CUSTOMER => [
+                PermissionSlug::VIEW_PRODUCT_CATEGORIES,
+                PermissionSlug::VIEW_PRODUCTS,
+            ],
+        };
+    }
 }
