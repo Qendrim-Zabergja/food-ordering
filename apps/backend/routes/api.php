@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Carts\CartController;
 use App\Http\Controllers\Carts\CartItemController;
+use App\Http\Controllers\Orders\OrderController;
 use App\Http\Controllers\Products\ProductCategoryController;
 use App\Http\Controllers\Products\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -57,4 +58,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('cart/items', [CartItemController::class, 'store']);
     Route::patch('cart/items/{cartItem}', [CartItemController::class, 'update']);
     Route::delete('cart/items/{cartItem}', [CartItemController::class, 'destroy']);
+
+    // Orders - index is scoped to your own unless you hold manage-orders
+    Route::get('orders', [OrderController::class, 'index']);
+    Route::post('orders', [OrderController::class, 'store']);
+    Route::get('orders/{order}', [OrderController::class, 'show']);
+    Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus']);
+    Route::patch('orders/{order}/cancel', [OrderController::class, 'cancel']);
 });

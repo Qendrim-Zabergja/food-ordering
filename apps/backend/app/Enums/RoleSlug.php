@@ -46,6 +46,10 @@ enum RoleSlug: string
             self::CUSTOMER => [
                 PermissionSlug::VIEW_PRODUCT_CATEGORIES,
                 PermissionSlug::VIEW_PRODUCTS,
+
+                // Opens /api/orders. The controller scopes it to the customer's
+                // own orders - the permission alone would show them everyone's.
+                PermissionSlug::VIEW_ORDERS,
             ],
         };
     }
