@@ -72,6 +72,10 @@ export function Cart() {
         <div className="card">
           {cart.items.map((item) => (
             <div className="line" key={item.id}>
+              {item.product?.image_url ? (
+                <img className="line__thumb" src={item.product.image_url} alt="" width={48} height={48} />
+              ) : null}
+
               <div className="line__body">
                 <div className="line__name">{item.product?.name ?? 'Unknown item'}</div>
                 <div className="small muted">{item.formattedUnitPrice} each</div>

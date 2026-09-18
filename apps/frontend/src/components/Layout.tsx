@@ -8,6 +8,16 @@ function navClass({ isActive }: { isActive: boolean }): string {
   return isActive ? 'header__link header__link--active' : 'header__link'
 }
 
+/** "Demo Customer" -> "DC", "Administrator" -> "A" */
+function initials(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('')
+}
+
 export function Layout() {
   const { user, isAuthenticated, logout, can } = useAuth()
 
@@ -22,9 +32,9 @@ export function Layout() {
             🍕 Food Ordering
           </NavLink>
 
-          <nav className="header__nav">
-            {isAuthenticated ? (
-              <>
+          {isAuthenticated ? (
+            <>
+              <nav className="header__nav">
                 <NavLink to={RouteName.MENU} className={navClass}>
                   Menu
                 </NavLink>
@@ -45,26 +55,38 @@ export function Layout() {
                     Admin
                   </NavLink>
                 ) : null}
+              </nav>
 
-                <span className="header__link muted small" title={user?.email}>
-                  {user?.name}
+              {/*
+                Who you are, kept out of the nav. It was reading as a fourth
+                button beside Menu / Cart / Orders; an avatar and a name with the
+                email beneath it says identity rather than navigation.
+              */}
+              <div className="account">
+                <span className="account__avatar" aria-hidden="true">
+                  {initials(user?.name ?? '')}
+                </span>
+
+                <span className="account__text">
+                  <span className="account__name">{user?.name}</span>
+                  <span className="account__email">{user?.email}</span>
                 </span>
 
                 <button type="button" className="btn btn--sm" onClick={() => void logout()}>
                   Sign out
                 </button>
-              </>
-            ) : (
-              <>
-                <NavLink to={RouteName.LOGIN} className={navClass}>
-                  Sign in
-                </NavLink>
-                <NavLink to={RouteName.REGISTER} className="btn btn--primary btn--sm">
-                  Create account
-                </NavLink>
-              </>
-            )}
-          </nav>
+              </div>
+            </>
+          ) : (
+            <nav className="header__nav">
+              <NavLink to={RouteName.LOGIN} className={navClass}>
+                Sign in
+              </NavLink>
+              <NavLink to={RouteName.REGISTER} className="btn btn--primary btn--sm">
+                Create account
+              </NavLink>
+            </nav>
+          )}
         </div>
       </header>
 

@@ -81,7 +81,7 @@ export function Menu() {
       {isPending ? (
         <div className="grid">
           {Array.from({ length: 8 }, (_, index) => (
-            <div key={index} className="skeleton" style={{ height: 150 }} />
+            <div key={index} className="skeleton" style={{ height: 250 }} />
           ))}
         </div>
       ) : null}
@@ -96,29 +96,47 @@ export function Menu() {
       <div className="grid">
         {data?.products.map((product) => (
           <article key={product.id} className="product">
-            <span className="product__name">{product.name}</span>
-
-            {product.category ? (
-              <span className="small muted">{product.category.name}</span>
+            {product.image_url ? (
+              <div className="product__media">
+                <img
+                  src={product.image_url}
+                  /* The name is already in the heading below, so the photo is
+                     decorative and an empty alt keeps a screen reader from
+                     reading every dish twice. */
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  width={600}
+                  height={400}
+                />
+              </div>
             ) : null}
 
-            {product.description ? (
-              <p className="small muted" style={{ margin: 0 }}>
-                {product.description}
-              </p>
-            ) : null}
+            <div className="product__body">
+              <span className="product__name">{product.name}</span>
 
-            <div className="product__foot">
-              <span className="product__price">{product.formattedPrice}</span>
+              {product.category ? (
+                <span className="small muted">{product.category.name}</span>
+              ) : null}
 
-              <button
-                type="button"
-                className="btn btn--primary btn--sm"
-                disabled={addToCart.isPending}
-                onClick={() => add(product)}
-              >
-                Add
-              </button>
+              {product.description ? (
+                <p className="small muted" style={{ margin: 0 }}>
+                  {product.description}
+                </p>
+              ) : null}
+
+              <div className="product__foot">
+                <span className="product__price">{product.formattedPrice}</span>
+
+                <button
+                  type="button"
+                  className="btn btn--primary btn--sm"
+                  disabled={addToCart.isPending}
+                  onClick={() => add(product)}
+                >
+                  Add
+                </button>
+              </div>
             </div>
           </article>
         ))}

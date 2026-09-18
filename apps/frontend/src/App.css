@@ -326,3 +326,92 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 tbody tr:hover { background: var(--surface-2); }
 
 .admin-nav { display: flex; gap: 0.35rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+
+/* Account block ----------------------------------------------------------- */
+.account {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  /* Pushed to the far right of the header. With the brand's margin-right also
+     auto, the free space splits either side of the nav, which lands the links
+     in the middle and the account hard against the right edge - where people
+     look for who they are signed in as. */
+  margin-left: auto;
+}
+
+.account__avatar {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.account__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.account__name {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.account__email {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 14rem;
+}
+
+/* On a phone the email is noise next to a name that is already short. */
+@media (max-width: 560px) {
+  .account__text { display: none; }
+}
+
+/* Product images ---------------------------------------------------------- */
+.product { padding: 0; overflow: hidden; }
+
+.product__media {
+  aspect-ratio: 3 / 2;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.product__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* The photos come from a CDN: until one arrives, the tile is a flat
+     placeholder rather than a broken-image icon. */
+  color: transparent;
+}
+
+.product__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.9rem 1rem 1rem;
+  flex: 1;
+}
+
+.line__thumb {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--surface-2);
+  flex-shrink: 0;
+}
