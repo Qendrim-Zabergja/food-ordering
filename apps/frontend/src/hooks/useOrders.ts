@@ -9,6 +9,7 @@ import {
   type OrderFilters,
 } from '../api/orders'
 import type { OrderStatus } from '../enums/OrderStatus'
+import { OrderIncludes } from '../models/Order'
 import { queryKeys } from './queryKeys'
 
 export function useOrders(filters: OrderFilters = {}) {
@@ -21,7 +22,7 @@ export function useOrders(filters: OrderFilters = {}) {
 export function useOrder(id: string | undefined) {
   return useQuery({
     queryKey: queryKeys.order(id ?? ''),
-    queryFn: () => getOrder(id as string, ['user']),
+    queryFn: () => getOrder(id as string, [OrderIncludes.CUSTOMER]),
     enabled: Boolean(id),
   })
 }

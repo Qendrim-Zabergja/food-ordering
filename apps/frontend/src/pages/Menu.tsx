@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAddToCart } from '../hooks/useCart'
 import { useProductCategories, useProducts } from '../hooks/useProducts'
 import { errorMessage } from '../lib/api'
-import type { Product } from '../models/Product'
+import { ProductIncludes, type Product } from '../models/Product'
 
 export function Menu() {
   const [search, setSearch] = useState('')
@@ -14,7 +14,7 @@ export function Menu() {
     search: search || undefined,
     category: categoryId || undefined,
     is_available: true,
-    with: ['category'],
+    with: [ProductIncludes.CATEGORY],
     sort: 'name',
     limit: 60,
   })

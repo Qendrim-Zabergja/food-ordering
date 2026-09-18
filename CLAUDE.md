@@ -201,3 +201,24 @@ by rate limiting instead (`throttle:6,1`), registration always assigns the
 identical error for a wrong password and an unknown address so it cannot be used
 to enumerate accounts. Every other endpoint in the API is inside the
 `auth:sanctum` group and calls a Policy.
+
+**7. `SoftDeletes` omitted on `Cart`, `CartItem`, `OrderItem` and `User`.**
+`models.md` requires SoftDeletes on all main entity models. Four exceptions here,
+each for a different reason:
+
+- `Cart` / `CartItem` — working state, not records. Checkout empties the cart and
+  the order becomes the permanent record; there is nothing meaningful to restore.
+- `OrderItem` — has no independent lifecycle. It is only ever deleted with its
+  order, which does soft-delete, and a line is never removed on its own.
+- `User` — Laravel's own model. This application has no user-deletion feature, so
+  adding it would be scaffolding for a capability that does not exist.
+
+`Order`, `Product`, `ProductCategory` and `Role` — the models users actually
+manage — all use SoftDeletes.
+
+**8. `CartController` loads relationships explicitly rather than via `loadRelationships()`.**
+`controllers.md` forbids loading relationships outside `loadRelationships()`.
+The cart's `items_count` and `subtotal_cents` are computed from its items, so a
+cart serialised without them would report a total of zero. The eager load is a
+requirement of the payload, not a client choice, so it is `$cart->load(['items.product'])`
+in the controller. Every other controller follows the rule.

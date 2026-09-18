@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { ProductIncludes } from '../models/Product'
 import {
   createProduct,
   deleteProduct,
@@ -21,7 +22,7 @@ export function useProducts(filters: ProductFilters = {}) {
 export function useProduct(id: string | undefined) {
   return useQuery({
     queryKey: queryKeys.product(id ?? ''),
-    queryFn: () => getProduct(id as string, ['category']),
+    queryFn: () => getProduct(id as string, [ProductIncludes.CATEGORY]),
     enabled: Boolean(id),
   })
 }

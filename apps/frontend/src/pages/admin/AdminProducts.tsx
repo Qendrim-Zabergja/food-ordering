@@ -8,7 +8,7 @@ import {
 import { AdminNav } from '../../components/AdminNav'
 import { Field } from '../../components/Field'
 import { errorMessage, validationErrors } from '../../lib/api'
-import type { Product } from '../../models/Product'
+import { ProductIncludes, type Product } from '../../models/Product'
 
 interface FormState {
   categoryId: string
@@ -34,7 +34,7 @@ export function AdminProducts() {
   const [failed, setFailed] = useState(false)
 
   const { data: categories } = useProductCategories()
-  const { data, isPending } = useProducts({ with: ['category'], sort: 'name', limit: 100 })
+  const { data, isPending } = useProducts({ with: [ProductIncludes.CATEGORY], sort: 'name', limit: 100 })
 
   const saveProduct = useSaveProduct(editing?.id)
   const deleteProduct = useDeleteProduct()

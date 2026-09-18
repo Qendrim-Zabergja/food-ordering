@@ -4,6 +4,7 @@ import { useOrders, useUpdateOrderStatus } from '../../hooks/useOrders'
 import { AdminNav } from '../../components/AdminNav'
 import { StatusBadge } from '../../components/StatusBadge'
 import { OrderStatus } from '../../enums/OrderStatus'
+import { OrderIncludes } from '../../models/Order'
 import { orderPath } from '../../enums/RouteName'
 import { errorMessage } from '../../lib/api'
 
@@ -22,7 +23,7 @@ export function AdminOrders() {
 
   const { data, isPending, isError, error } = useOrders({
     status: status ? (status as OrderStatus) : undefined,
-    with: ['user'],
+    with: [OrderIncludes.CUSTOMER],
     sort: '!placed_at',
     limit: 50,
   })

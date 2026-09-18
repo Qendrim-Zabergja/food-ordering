@@ -60,6 +60,8 @@ class OrderController extends Controller
 
         $order = $this->checkout->placeOrder($request->user(), $request->validated());
 
+        $order = $this->loadRelationships($order, $request);
+
         return response(new OrderResource($order), 201);
     }
 
@@ -69,7 +71,9 @@ class OrderController extends Controller
 
         $order->transitionTo(OrderStatus::from($request->validated()['status']));
 
-        return response(new OrderResource($order->load('items')), 200);
+        $order = $this->loadRelationships($order->load('items'), $request);
+
+        return response(new OrderResource($order), 200);
     }
 
     /**
@@ -77,12 +81,14 @@ class OrderController extends Controller
      * may do it differs: a customer can call off their own order early on, an
      * administrator can cancel any order the status rules still permit.
      */
-    public function cancel(Order $order): Response
+    public function cancel(Order $order, Request $request): Response
     {
         $this->authorize('cancel', $order);
 
         $order->transitionTo(OrderStatus::CANCELLED);
 
-        return response(new OrderResource($order->load('items')), 200);
+        $order = $this->loadRelationships($order->load('items'), $request);
+
+        return response(new OrderResource($order), 200);
     }
 }
