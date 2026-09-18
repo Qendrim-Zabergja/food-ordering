@@ -174,3 +174,12 @@ a status model. Here the status set is fixed in code
 (`pending → confirmed → preparing → delivering → completed`, plus `cancelled`),
 is never user-editable, and drives transition rules that live in PHP. A backed enum
 on a string column expresses that better than a lookup table.
+
+**4. Native PHP backed enums instead of `BenSampo\Enum\Enum`.**
+`permissions.md` shows `final class PermissionSlug extends Enum` using the
+bensampo/laravel-enum package. This project uses native PHP 8.1 backed enums
+(`enum PermissionSlug: string`) instead: no third-party dependency, no Laravel 13
+compatibility question, and real type safety at call sites rather than loose
+string constants. The invariant the standard protects — permission strings are
+never raw literals — is unchanged. Enum cases are compared by `->value` when a
+string is required.
