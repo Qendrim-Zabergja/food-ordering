@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Carts\CartController;
+use App\Http\Controllers\Carts\CartItemController;
 use App\Http\Controllers\Products\ProductCategoryController;
 use App\Http\Controllers\Products\ProductController;
 use Illuminate\Http\Request;
@@ -35,4 +37,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('products/{product}', [ProductController::class, 'update']);
     Route::delete('products/{product}', [ProductController::class, 'destroy']);
     Route::patch('products/{uuid}/restore', [ProductController::class, 'restore']);
+
+    // Cart - always the authenticated user's own, so no identifier in the path
+    Route::get('cart', [CartController::class, 'show']);
+    Route::delete('cart', [CartController::class, 'destroy']);
+    Route::post('cart/items', [CartItemController::class, 'store']);
+    Route::patch('cart/items/{cartItem}', [CartItemController::class, 'update']);
+    Route::delete('cart/items/{cartItem}', [CartItemController::class, 'destroy']);
 });
