@@ -1,0 +1,15 @@
+# Dependencies (each app also has its own .gitignore)
+node_modules/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local scratch
+/tmp/
