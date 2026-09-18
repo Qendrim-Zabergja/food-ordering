@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Food Ordering — AI Development Record</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ground: #ffffff;
+    --sunk: #f4f6f8;
+    --dev-bg: #eef3f8;
+    --ink: #1a1d21;
+    --muted: #596068;
+    --faint: #878e96;
+    --rule: #e1e5e9;
+    --rule-strong: #c6ccd3;
+    --accent: #1f4e79;
+    --term-bg: #1c2128;
+    --term-ink: #d7dde4;
+    --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #16191c;
+      --sunk: #1f2327;
+      --dev-bg: #1b2530;
+      --ink: #e4e7ea;
+      --muted: #a0a8b0;
+      --faint: #79818a;
+      --rule: #2b3036;
+      --rule-strong: #3c434b;
+      --accent: #7aaddb;
+      --term-bg: #0f1216;
+      --term-ink: #cdd5de;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15.5px;
+    line-height: 1.62;
+  }
+
+  .wrap { max-width: 70ch; margin: 0 auto; padding-inline: 20px; }
+
+  header { border-bottom: 1px solid var(--rule-strong); }
+  header .wrap { padding-block: 2.5rem 1.75rem; }
+
+  h1 {
+    font-size: 1.55rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    margin: 0 0 0.4rem;
+  }
+
+  .subtitle { color: var(--muted); margin: 0 0 1.5rem; }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--faint);
+    margin: 0;
+  }
+
+  main .wrap { padding-block: 2.25rem 4rem; }
+
+  .note {
+    font-size: 0.9rem;
+    color: var(--muted);
+    border-left: 2px solid var(--rule-strong);
+    padding-left: 1rem;
+    margin: 0 0 2.75rem;
+  }
+
+  .note p { margin: 0 0 0.6rem; }
+  .note p:last-child { margin-bottom: 0; }
+
+  section { margin-bottom: 2.9rem; }
+
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 1rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    gap: 0.65rem;
+    align-items: baseline;
+  }
+
+  .num {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    font-weight: 500;
+    color: var(--faint);
+    flex-shrink: 0;
+  }
+
+  p { margin: 0 0 0.85rem; }
+
+  .turn { margin: 0 0 1.25rem; }
+
+  .turn--dev {
+    background: var(--dev-bg);
+    border-left: 3px solid var(--accent);
+    padding: 0.9rem 1.1rem;
+    border-radius: 0 3px 3px 0;
+  }
+
+  .turn--ai { padding-left: 1.1rem; border-left: 1px solid var(--rule); }
+
+  .who {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-bottom: 0.5rem;
+  }
+
+  .turn--dev .who { color: var(--accent); }
+  .turn > :last-child { margin-bottom: 0; }
+
+  pre {
+    background: var(--term-bg);
+    color: var(--term-ink);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    line-height: 1.55;
+    padding: 0.8rem 0.95rem;
+    border-radius: 3px;
+    overflow-x: auto;
+    margin: 0 0 0.9rem;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.87em;
+    background: var(--sunk);
+    padding: 0.1em 0.33em;
+    border-radius: 2px;
+  }
+
+  pre code { background: none; padding: 0; font-size: 1em; color: inherit; }
+
+  .scroll { overflow-x: auto; margin: 0 0 1rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+
+  th, td {
+    text-align: left;
+    padding: 0.5rem 0.75rem 0.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+
+  th {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--faint);
+    font-weight: 500;
+    white-space: nowrap;
+    border-bottom-color: var(--rule-strong);
+  }
+
+  td:last-child, th:last-child { padding-right: 0; }
+
+  ul, ol { margin: 0 0 0.9rem; padding-left: 1.25rem; }
+  li { margin-bottom: 0.35rem; }
+
+  strong { font-weight: 600; }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  @media (max-width: 480px) {
+    h2 { flex-direction: column; gap: 0.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>Food Ordering — AI Development Record</h1>
+    <p class="subtitle">
+      The direction given at each decision point during development, and the outcome.
+    </p>
+    <p class="meta">
+      <span>Laravel 13 · React 19 · MySQL 8</span>
+      <span>114 tests · 330 assertions</span>
+      <span>14 exchanges</span>
+    </p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="note">
+      <p>
+        Development used AI assistance. This document records the direction given at each
+        decision point and the outcome it produced, edited for clarity and length; it is not a
+        verbatim export. The unedited session log is submitted separately.
+      </p>
+    </div>
+
+    <section>
+      <h2><span class="num">01</span> Scope and working constraints</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>We are building a food ordering application on Laravel, React and MySQL, exposed as a REST API. Scope: administrator authentication, a product catalogue with categories, a cart supporting quantity changes and removal, order creation, a customer's own order history, order status, and an admin panel for products and orders.</p>
+        <p>Three constraints before we start. Take the installation commands from the official Laravel and React documentation rather than from memory, and leave them for me to run. Structure the repository as a monorepo. Apply our existing backend engineering standards — model naming, UUID exposure and authorisation.</p>
+      </div>
+
+      <div class="turn turn--ai">
+        <span class="who">Response</span>
+        <p>Retrieved the Laravel 13 installation and Sanctum documentation and the React guidance, read the standards files, then checked the local toolchain and reported PHP 8.3.14 against Laravel 13's 8.3–8.5 requirement before recommending anything.</p>
+        <p>Proposed an npm-workspace monorepo with the API and the single-page application as separate workspaces sharing only the HTTP contract.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="num">02</span> Architecture settled before implementation</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>Before writing feature code, put the architectural choices on the table with their trade-offs. I want these decided deliberately rather than inherited as defaults.</p>
+      </div>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Question</th><th>Chosen</th><th>Reasoning</th></tr></thead>
+          <tbody>
+            <tr><td>Authentication</td><td><strong>Sanctum bearer tokens</strong></td><td>Stateless; no CSRF handshake or cookie-domain constraint between ports</td></tr>
+            <tr><td>Cart location</td><td><strong>Server-side</strong></td><td>Prices validated on the server; a client cart means trusting the browser</td></tr>
+            <tr><td>Permission tiers</td><td><strong>VIEW / MANAGE</strong></td><td>The standard permits omitting BROWSE where no autocomplete needs it</td></tr>
+            <tr><td>Who can order</td><td><strong>Registered users</strong></td><td>Makes "own order history" a scoping rule, not a guest-lookup flow</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Bearer tokens depart from Laravel's own recommendation for first-party single-page
+        applications, so it was recorded as a deliberate deviation rather than left
+        undocumented. Eight such deviations are listed in the project's <code>CLAUDE.md</code>.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">03</span> The client–server boundary</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>Before we build on top of this, set out exactly how the frontend and backend communicate, and what does and does not cross the boundary.</p>
+      </div>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Stays server-side</th><th>Crosses to React</th></tr></thead>
+          <tbody>
+            <tr><td>Numeric <code>id</code> columns</td><td><code>uuid</code>, serialised as <code>id</code></td></tr>
+            <tr><td>Price calculation and order totals</td><td>The computed total, read-only</td></tr>
+            <tr><td>Permission checks (Policies)</td><td>A permissions array, for hiding UI only</td></tr>
+            <tr><td>Status transition rules</td><td>The current status</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        The third row became a rule the rest of the project follows: client-side permission
+        checks are cosmetic, and the Policy on the server is the security boundary. Tests assert
+        that a customer receives <code>403</code> on write endpoints regardless of what the
+        interface shows.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">04</span> Shared foundations before features</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>Put the base layer in place before any entity work — the pieces every model, controller and resource will depend on — and follow the patterns already used in our other Laravel projects rather than inventing new ones.</p>
+      </div>
+
+      <div class="turn turn--ai">
+        <span class="who">Response</span>
+        <p>Ported five base classes from the existing production codebase so the request contract matches the organisation's other APIs:</p>
+      </div>
+
+      <ul>
+        <li><code>HasUuid</code> — assigns the external UUID on create, with <code>getRouteKeyName()</code> in the trait so no model can omit it</li>
+        <li><code>Controller::loadRelationships()</code> — the single place that interprets <code>?with=</code></li>
+        <li><code>QueryFilters</code>, <code>Filterable</code>, <code>QuerySorting</code> — the <code>Model::filter($filters)</code> pattern used by every index endpoint</li>
+        <li><code>BaseResource</code> — parent of all resources</li>
+        <li><code>PermissionSlug</code>, <code>RoleSlug</code> — native PHP backed enums</li>
+      </ul>
+
+      <p>
+        Native enums replaced the package-based enum the standards describe: no third-party
+        dependency, no Laravel 13 compatibility question, and type safety at the call site. The
+        invariant the standard protects — permission strings are never raw literals — is
+        unchanged.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">05</span> Review authority over the repository</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>Do not commit anything. Propose the commit message and I will review the change and commit it myself.</p>
+      </div>
+
+      <p>
+        Every change entering history passed a human decision point from this stage onwards. The
+        first proposed message was mangled by PowerShell's handling of multi-line arguments; the
+        cause was diagnosed, the unpushed commit amended, and subsequent commands were given in
+        PowerShell syntax rather than bash.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">06</span> Generated code held to the project's conventions</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>Use our scaffolding tool for the product entities, as the standards require, then verify the result against the conventions before we build on it.</p>
+      </div>
+
+      <div class="turn turn--ai">
+        <span class="who">Response</span>
+        <p>The tool reported success while having written PHP that would not parse — it assumed a different permission-enum structure to the one this project uses:</p>
+      </div>
+
+      <pre><code>PHP Fatal error: Cannot redefine class constant
+                 PermissionSlug::VIEW_PRODUCT_CATEGORIES
+
+PHP Parse error: syntax error, unexpected token ","
+                 in PermissionSeeder.php on line 44</code></pre>
+
+      <p>
+        Eleven further defects were found in its output, including <code>uuid</code> in
+        <code>$fillable</code> — which would have allowed a client to choose its own identifier
+        — a table named <code>productcategories</code> rather than
+        <code>product_categories</code>, and routes registered outside the authenticated group.
+        All of it was rewritten against the project's conventions.
+      </p>
+
+      <p>
+        A tool's own success report is not evidence. Checking that the project still parsed
+        afterwards is what caught it, and a proposed amendment to the standards was written up
+        so the next person checks the files a tool <em>edits</em>, not only the ones it writes.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">07</span> Money, and when a price becomes final</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>Decide how prices are stored and at which point in the flow a price becomes final. An order must not be able to change value after it has been placed.</p>
+      </div>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Location</th><th>Behaviour</th><th>Reasoning</th></tr></thead>
+          <tbody>
+            <tr><td>Product</td><td>Current price</td><td>It is the menu</td></tr>
+            <tr><td>Cart line</td><td>Reads the product price <strong>live</strong></td><td>A cart remembering an old price would quietly charge it</td></tr>
+            <tr><td>Order line</td><td>A <strong>copy</strong>, written at checkout</td><td>An order records what was agreed</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Prices are stored as integer cents throughout; a decimal or float rounds, and rounding
+        errors surface once quantities and totals are involved. Order lines duplicate the
+        product name alongside the price, and the foreign key is <code>nullOnDelete</code>
+        rather than <code>cascadeOnDelete</code> — removing a product from the menu must never
+        delete the record of having sold it. Two tests assert that renaming, repricing or
+        deleting a product leaves past orders unchanged.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">08</span> Authentication, and an error the tests could not reach</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>Implement registration, login, logout and current-user endpoints. Before calling it done, exercise them against a running server rather than relying on the test suite.</p>
+      </div>
+
+      <div class="turn turn--ai">
+        <span class="who">Response</span>
+        <p>With the suite passing at 77 tests, a request from a browser returned:</p>
+      </div>
+
+      <pre><code>GET /api/products  (Accept: */*)
+→ 500  "Route [login] not defined."</code></pre>
+
+      <p>
+        Laravel's <code>Authenticate</code> middleware redirects unauthenticated users to a
+        login route, which an API-only application does not have. Laravel's test client always
+        sends <code>Accept: application/json</code>, which takes the JSON path and never
+        exercises the redirect — so no test could have caught it. A browser takes the broken
+        path, meaning every unauthenticated request from the React application would have hit
+        it.
+      </p>
+
+      <p>
+        Fixed by returning no redirect target for guests, with a regression test that sends
+        <code>Accept: */*</code> explicitly. Registration always assigns the customer role and
+        never reads one from the payload; login returns an identical error for a wrong password
+        and an unknown address, so it cannot be used to enumerate accounts. Both endpoints are
+        rate limited.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">09</span> The order lifecycle</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>I am considering reducing the order statuses to Confirmed, Preparing and Completed. Make the case for or against before changing anything.</p>
+      </div>
+
+      <div class="turn turn--ai">
+        <span class="who">Response</span>
+        <p>The case against removing <code>pending</code>: every order is <em>created</em> pending, so without it an order would be born "Confirmed" — the restaurant accepting it before anyone had looked, with no state for "ordered, not yet decided" and therefore no way to reject one. It also drives customer cancellation, which is permitted while an order is pending or confirmed and not after.</p>
+      </div>
+
+      <p>All five were kept. The follow-up concerned how the interface presented them:</p>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>Keep the five, but an administrator only ever sees three options. The interface should show the whole lifecycle and where an order currently sits in it.</p>
+      </div>
+
+      <p>
+        The three buttons were the next <em>legal</em> steps rather than the status list — but
+        the observation held: nothing showed the pipeline as a whole. Added
+        <code>pipeline()</code>, <code>step()</code> and <code>hasReached()</code> to the
+        <code>OrderStatus</code> enum, exposed <code>step</code>, <code>total_steps</code> and a
+        <code>progress</code> array in the API response, and rendered a progress indicator on
+        the order page with a "Step 3 of 5" column in the table.
+      </p>
+
+      <p>
+        Cancelled is modelled as leaving the pipeline rather than completing it, so a cancelled
+        order shows no misleading 5-of-5 bar. The transition rules live only on the server; the
+        React components render what the API sends, so changing the lifecycle requires no
+        frontend change at all.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">10</span> Frontend architecture</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>Set up the React application with the same discipline as the backend: typed models rather than raw response objects, route and permission constants rather than string literals, and a single place where the token and error handling live.</p>
+      </div>
+
+      <div class="turn turn--ai">
+        <span class="who">Response</span>
+        <p>One axios instance carries the bearer token and handles 401 centrally; API responses are hydrated into model classes before reaching a component; routes and permissions are constants.</p>
+        <p>Two constraints came from the toolchain rather than preference. The TypeScript configuration sets <code>erasableSyntaxOnly</code>, which forbids <code>enum</code> — so the constants are <code>as const</code> objects, which read identically at the call site. And <code>strict</code> was absent from the scaffold and was enabled, since typed models are worth little without <code>strictNullChecks</code>.</p>
+      </div>
+
+      <p>
+        ESLint rejected a real defect during this work: <code>setState</code> called
+        synchronously inside an effect body, causing a cascading render. It was fixed by
+        deriving the initial state rather than by suppressing the rule.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">11</span> Consolidating the orders screens</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>The separate Admin section for orders looks redundant. An administrator should open Orders, select an order and change its status there, next to the items and delivery details.</p>
+      </div>
+
+      <div class="turn turn--ai">
+        <span class="who">Response</span>
+        <p>Investigating it surfaced a defect: <code>/api/orders</code> already returned <strong>every</strong> order to a user holding <code>manage-orders</code>, because the controller unscopes for that permission — but the page heading still read "Your orders". The admin screen existed only to display the same rows under a correct heading.</p>
+      </div>
+
+      <p>
+        The duplicate screen was removed in favour of one orders page that adapts to the viewer
+        — customer column, status filters and a Manage action for administrators, a plain list
+        for customers. Status transitions moved onto the order detail page. No backend change
+        was required, because the API had been scoping correctly the whole time.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">12</span> An operational view</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>Add a filter to the orders page for administrators: orders placed today whose status is not completed.</p>
+      </div>
+
+      <p>Built as two composable query filters rather than one fixed flag:</p>
+
+      <pre><code>?filter[placed_on]=today
+?filter[exclude_status][]=completed</code></pre>
+
+      <p>
+        "Placed today" and "not finished" are independent questions, so a single combined filter
+        would have meant a new endpoint for the next variation. Administrators land on this view
+        by default, since it is the reason to open the page during service.
+        <code>cancelled</code> is excluded alongside <code>completed</code>, as the view answers
+        what is still to do and a cancelled order is as finished as a delivered one.
+      </p>
+
+      <p>
+        Six tests cover it, including one asserting that a customer using the same filters is
+        still scoped to their own orders — the filter cannot be used to widen access.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">13</span> Interface review</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>Two things in the header read wrongly. The signed-in user's name is styled like a navigation button, and it belongs at the right-hand edge rather than beside the links. Separately, the admin section is labelled "Admin", which describes who it is for rather than what it does.</p>
+      </div>
+
+      <p>
+        The name became an account block — avatar, name and email — pinned to the right of the
+        header, with the navigation centred between the brand and it. "Admin" became "Manage
+        menu": with orders now handled from the orders page, that section edits exactly one
+        thing, and the link is already hidden from anyone without the permission.
+      </p>
+
+      <p>
+        Neither was detectable by automated checks. Both required looking at the running
+        application and noticing it communicated the wrong thing.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">14</span> Extending the permission model</h2>
+
+      <div class="turn turn--dev">
+        <span class="who">Developer</span>
+        <p>Document what is involved in adding a new role and granting it permissions, including anything that could go wrong.</p>
+      </div>
+
+      <p>
+        Adding a role is an enum case, two <code>match</code> arms the compiler will not let you
+        skip, and a seeder run. Four constraints were documented alongside it:
+      </p>
+
+      <ol>
+        <li><code>hasPermissions()</code> requires all permissions to come from a <strong>single</strong> role, so two narrow roles do not combine into a broad one</li>
+        <li><code>defaultPermissions()</code> grants but never revokes</li>
+        <li><code>permissions:sync</code> grants new permissions only to full-access roles</li>
+        <li>Roles are defined in code rather than managed at runtime — a scope decision, recorded as such</li>
+      </ol>
+
+      <p>
+        The first is the one that would cause a real bug, and it is covered by a test asserting
+        that a user holding two narrow roles is refused the combination.
+      </p>
+    </section>
+
+    <section>
+      <h2><span class="num">15</span> Verification</h2>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Check</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>Backend test suite (Pest 4)</td><td>114 tests, 330 assertions, passing</td></tr>
+            <tr><td>Backend formatting (Pint)</td><td>Clean</td></tr>
+            <tr><td>Frontend type check and build</td><td>Clean</td></tr>
+            <tr><td>Frontend lint (ESLint)</td><td>Clean</td></tr>
+            <tr><td>Migrations against MySQL 8</td><td><code>migrate:fresh --seed</code> verified</td></tr>
+            <tr><td>End-to-end over HTTP</td><td>Register → browse → cart → checkout → order → status lifecycle</td></tr>
+            <tr><td>Browser</td><td>Login, cart quantities, checkout validation, order history, permission refusals</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Tests assert behaviour that could regress, not only happy paths:</p>
+
+      <ul>
+        <li>A numeric id in a URL returns <strong>404</strong> — UUID route binding cannot be bypassed</li>
+        <li>A <code>uuid</code> supplied in a create payload is <strong>ignored</strong></li>
+        <li>A client posting <code>price</code>, <code>price_cents</code> and <code>unit_price_cents</code> is charged the product's real price</li>
+        <li>An unknown filter key does <strong>not</strong> widen a result set</li>
+        <li>A <code>PATCH</code> of one field does not clear the others</li>
+        <li>Two narrow roles do <strong>not</strong> combine into a broad one</li>
+        <li>A customer receives <strong>403</strong> on another user's cart item and order</li>
+        <li>A cancelled order is treated as leaving the pipeline, not completing it</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>
+        Eight deviations from the house engineering standards are documented with their
+        reasoning in the project's <code>CLAUDE.md</code>. The unedited session log is submitted
+        separately.
+      </p>
+    </footer>
+
+  </div>
+</main>
+
+</body>
+</html>

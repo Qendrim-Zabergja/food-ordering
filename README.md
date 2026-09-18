@@ -38,7 +38,9 @@ communicates with Laravel exclusively over JSON HTTP under `/api`.
 
 ## Setup
 
-Clone, then install both applications:
+Six steps from a clean clone. MySQL must be running before step 4.
+
+**1. Install dependencies** — both applications:
 
 ```bash
 npm install
@@ -48,54 +50,82 @@ npm install
 composer install --working-dir=apps/backend
 ```
 
-Create the API environment file and generate a key:
+**2. Create the API environment file** and generate its key:
 
 ```bash
-cp apps/backend/.env.example apps/backend/.env && php apps/backend/artisan key:generate
+cp apps/backend/.env.example apps/backend/.env
 ```
 
-Create the database (MySQL must be running):
+```bash
+php apps/backend/artisan key:generate
+```
+
+On Windows PowerShell, use `Copy-Item` instead of `cp`.
+
+**3. Create the frontend environment file** — one line, telling React where the
+API is:
+
+```bash
+echo "VITE_API_URL=http://localhost:8000/api" > apps/frontend/.env
+```
+
+**4. Create the database.** The default credentials in `.env.example` are
+`root` with no password, matching a standard Laragon or XAMPP install — change
+`DB_USERNAME` and `DB_PASSWORD` in `apps/backend/.env` if yours differ:
 
 ```bash
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS food_ordering CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
-Run migrations and seed permissions, roles and demo data:
+**5. Run the migrations and seed the data:**
 
 ```bash
 npm run fresh
 ```
 
-Point the frontend at the API — create `apps/frontend/.env`:
+This runs `migrate:fresh --seed`, which creates every table, registers the
+permissions, creates the `admin` and `customer` roles, seeds a 22-item menu, and
+creates the two accounts listed below.
 
-```ini
-VITE_API_URL=http://localhost:8000/api
-```
-
-## Running
-
-Both applications at once:
+**6. Start both applications:**
 
 ```bash
 npm run dev
 ```
 
-Or separately:
+The API runs on `http://localhost:8000` and the interface on
+`http://localhost:5173`. Open the interface and sign in with one of the demo
+accounts.
+
+## Demo accounts
+
+Created by step 5. Sign in with either:
+
+| Role | Email | Password |
+|---|---|---|
+| Administrator | `admin@food-ordering.test` | `password` |
+| Customer | `customer@food-ordering.test` | `password` |
+
+Registering through the application always creates a customer — the role is
+never read from the request.
+
+## Commands
 
 ```bash
-npm run dev:backend    # http://localhost:8000
-npm run dev:frontend   # http://localhost:5173
-```
+npm run dev            # both applications
+npm run dev:backend    # API only, http://localhost:8000
+npm run dev:frontend   # interface only, http://localhost:5173
 
-## Other commands
-
-```bash
-npm run lint           # ESLint over the React app
 npm run test:backend   # Pest test suite
+npm run lint           # ESLint over the React app
+npm run build          # production build of the interface
+
 npm run migrate        # run pending migrations
+npm run fresh          # drop everything, migrate and re-seed
 ```
 
-After any change to permissions, sync them:
+After adding or removing a permission, sync the database with the
+`PermissionSlug` enum:
 
 ```bash
 php apps/backend/artisan permissions:sync --dry-run   # preview
@@ -107,3 +137,12 @@ php apps/backend/artisan permissions:sync             # apply
 Engineering standards for this project are documented in [CLAUDE.md](CLAUDE.md).
 Read it before contributing — the model naming, UUID and authorization rules are
 non-negotiable.
+
+## Technical record
+
+The decisions taken during development and the reasoning behind each are in
+[docs/AI-DEVELOPMENT.md](docs/AI-DEVELOPMENT.md), with an HTML version at
+[docs/ai-chat-transcript.html](docs/ai-chat-transcript.html).
+
+Development used AI assistance; the unedited session log is submitted alongside
+the project.
