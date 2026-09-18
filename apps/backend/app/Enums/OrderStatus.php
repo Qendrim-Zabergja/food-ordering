@@ -70,6 +70,47 @@ enum OrderStatus: string
     }
 
     /**
+     * The happy path, in order.
+     *
+     * Cancelled is deliberately absent: it is an exit, not a stage. An order
+     * that is cancelled left the pipeline, it did not reach the end of it.
+     *
+     * @return array<int, self>
+     */
+    public static function pipeline(): array
+    {
+        return [self::PENDING, self::CONFIRMED, self::PREPARING, self::DELIVERING, self::COMPLETED];
+    }
+
+    /**
+     * How far along the pipeline this status is, counting from 1.
+     * Returns null for cancelled, which is not on it.
+     */
+    public function step(): ?int
+    {
+        $index = array_search($this, self::pipeline(), true);
+
+        return $index === false ? null : $index + 1;
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this === self::CANCELLED;
+    }
+
+    /**
+     * Whether an order in this status has already been through $stage.
+     */
+    public function hasReached(self $stage): bool
+    {
+        if ($this->isCancelled() || $stage->step() === null) {
+            return false;
+        }
+
+        return $stage->step() <= $this->step();
+    }
+
+    /**
      * Whether a customer may still cancel an order in this status themselves.
      *
      * Narrower than what an administrator can do: once the kitchen has started

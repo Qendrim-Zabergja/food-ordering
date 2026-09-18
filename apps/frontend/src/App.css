@@ -415,3 +415,101 @@ tbody tr:hover { background: var(--surface-2); }
   background: var(--surface-2);
   flex-shrink: 0;
 }
+
+/* Order progress ---------------------------------------------------------- */
+.progress {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  counter-reset: step;
+}
+
+.progress--cancelled {
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.progress__step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  position: relative;
+  text-align: center;
+  min-width: 0;
+}
+
+/* The connector sits behind the dots and stops at the first and last step, so
+   the line never dangles off either end of the row. */
+.progress__step::before {
+  content: '';
+  position: absolute;
+  top: 0.68rem;
+  right: 50%;
+  left: -50%;
+  height: 2px;
+  background: var(--border);
+}
+
+.progress__step:first-child::before { display: none; }
+.progress__step--reached::before,
+.progress__step--current::before { background: var(--accent); }
+
+.progress__dot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--accent-contrast);
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.progress__step--reached .progress__dot {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.progress__step--current .progress__dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.progress__label {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  line-height: 1.25;
+}
+
+.progress__step--current .progress__label {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.progress__step--reached .progress__label { color: var(--text); }
+
+@media (max-width: 560px) {
+  .progress__label { font-size: 0.7rem; }
+}
+
+.step-count {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+  white-space: nowrap;
+}

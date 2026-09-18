@@ -7,6 +7,14 @@ export const OrderIncludes = {
   CUSTOMER: 'user',
 } as const
 
+/** One stage of the lifecycle, as the API describes it. */
+export interface OrderProgressStage {
+  status: OrderStatus
+  label: string
+  reached: boolean
+  current: boolean
+}
+
 export class Order extends Model {
   order_number = ''
   status: OrderStatus = OrderStatus.PENDING
@@ -20,6 +28,14 @@ export class Order extends Model {
    */
   allowed_transitions: OrderStatus[] = []
   can_be_cancelled_by_customer = false
+
+  /**
+   * The full lifecycle with the current position marked. The stages and their
+   * order come from the API, so this client never restates them.
+   */
+  progress: OrderProgressStage[] = []
+  step: number | null = null
+  total_steps = 0
 
   total_cents = 0
   total = 0
@@ -38,6 +54,7 @@ export class Order extends Model {
     this.items = OrderItem.collection(data.items as ApiPayload[] | undefined)
     this.customer = data.customer ? new User().hydrate(data.customer as ApiPayload) : null
     this.allowed_transitions = (data.allowed_transitions as OrderStatus[]) ?? []
+    this.progress = (data.progress as OrderProgressStage[]) ?? []
 
     return this
   }

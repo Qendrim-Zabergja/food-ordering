@@ -346,3 +346,46 @@ describe('cancelling', function () {
             ->assertJsonValidationErrors('status');
     });
 });
+
+describe('lifecycle visibility', function () {
+    it('sends the whole pipeline with the current position marked', function () {
+        $order = Order::factory()->status(OrderStatus::PREPARING)->create(['user_id' => $this->customer->id]);
+
+        Sanctum::actingAs($this->customer);
+
+        $response = $this->getJson("/api/orders/{$order->uuid}")->assertOk();
+
+        expect($response->json('step'))->toBe(3)
+            ->and($response->json('total_steps'))->toBe(5)
+            ->and(array_column($response->json('progress'), 'status'))
+            ->toBe(['pending', 'confirmed', 'preparing', 'delivering', 'completed'])
+            ->and(array_column($response->json('progress'), 'reached'))
+            ->toBe([true, true, true, false, false])
+            ->and(array_column($response->json('progress'), 'current'))
+            ->toBe([false, false, true, false, false]);
+    });
+
+    it('treats cancelled as off the pipeline, not the end of it', function () {
+        $order = Order::factory()->status(OrderStatus::CANCELLED)->create(['user_id' => $this->customer->id]);
+
+        Sanctum::actingAs($this->customer);
+
+        $response = $this->getJson("/api/orders/{$order->uuid}")->assertOk();
+
+        expect($response->json('step'))->toBeNull()
+            ->and(array_column($response->json('progress'), 'reached'))
+            ->toBe([false, false, false, false, false]);
+    });
+
+    it('marks every stage reached once an order is completed', function () {
+        $order = Order::factory()->status(OrderStatus::COMPLETED)->create(['user_id' => $this->customer->id]);
+
+        Sanctum::actingAs($this->customer);
+
+        $response = $this->getJson("/api/orders/{$order->uuid}")->assertOk();
+
+        expect($response->json('step'))->toBe(5)
+            ->and(array_column($response->json('progress'), 'reached'))
+            ->toBe([true, true, true, true, true]);
+    });
+});

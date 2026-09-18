@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router'
 import { useCancelOrder, useOrder } from '../hooks/useOrders'
+import { OrderProgress } from '../components/OrderProgress'
 import { StatusBadge } from '../components/StatusBadge'
 import { RouteName } from '../enums/RouteName'
 import { errorMessage } from '../lib/api'
@@ -57,6 +58,8 @@ export function OrderDetail() {
       {cancelOrder.isError ? (
         <div className="alert alert--error">{errorMessage(cancelOrder.error)}</div>
       ) : null}
+
+      <OrderProgress order={order} />
 
       <div className="split">
         <div className="card">

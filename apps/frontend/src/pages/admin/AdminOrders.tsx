@@ -98,6 +98,14 @@ export function AdminOrders() {
                   <td className="muted small">{order.placedAtLabel}</td>
                   <td>
                     <StatusBadge status={order.status} label={order.status_label} />
+
+                    {/* Answers "where is this in the lifecycle", which the
+                        next-step buttons alone do not say. */}
+                    {order.step ? (
+                      <span className="step-count">
+                        Step {order.step} of {order.total_steps}
+                      </span>
+                    ) : null}
                   </td>
                   <td className="num">{order.formattedTotal}</td>
                   <td>
