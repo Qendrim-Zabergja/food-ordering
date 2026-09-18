@@ -38,76 +38,92 @@ communicates with Laravel exclusively over JSON HTTP under `/api`.
 
 ## Setup
 
-Six steps from a clean clone. MySQL must be running before step 4.
+**1. Clone the repository**
 
-**1. Install dependencies** — both applications:
+```bash
+git clone https://github.com/Qendrim-Zabergja/food-ordering.git
+cd food-ordering
+```
+
+**2. Install the frontend dependencies** (from the repository root)
 
 ```bash
 npm install
 ```
 
+**3. Install the backend dependencies**
+
 ```bash
-composer install --working-dir=apps/backend
+cd apps/backend
+composer install
 ```
 
-**2. Create the API environment file** and generate its key:
+**4. Create the two environment files**
+
+In `apps/backend/`, copy the example file:
 
 ```bash
-cp apps/backend/.env.example apps/backend/.env
+cp .env.example .env
 ```
 
-```bash
-php apps/backend/artisan key:generate
+In `apps/frontend/`, create a `.env` file containing one line:
+
+```ini
+VITE_API_URL=http://localhost:8000/api
 ```
 
-On Windows PowerShell, use `Copy-Item` instead of `cp`.
-
-**3. Create the frontend environment file** — one line, telling React where the
-API is:
+**5. Generate the application key** (in `apps/backend/`)
 
 ```bash
-echo "VITE_API_URL=http://localhost:8000/api" > apps/frontend/.env
+php artisan key:generate
 ```
 
-**4. Create the database.** The default credentials in `.env.example` are
-`root` with no password, matching a standard Laragon or XAMPP install — change
-`DB_USERNAME` and `DB_PASSWORD` in `apps/backend/.env` if yours differ:
+**6. Create the database**
+
+Start MySQL, then create an empty database named `food_ordering`. The
+credentials in `.env` default to user `root` with no password — change
+`DB_USERNAME` and `DB_PASSWORD` in `apps/backend/.env` if yours differ.
 
 ```bash
-mysql -u root -e "CREATE DATABASE IF NOT EXISTS food_ordering CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -e "CREATE DATABASE food_ordering CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
-**5. Run the migrations and seed the data:**
+**7. Run the migrations and seed the data** (in `apps/backend/`)
 
 ```bash
-npm run fresh
+php artisan migrate --seed
 ```
 
-This runs `migrate:fresh --seed`, which creates every table, registers the
-permissions, creates the `admin` and `customer` roles, seeds a 22-item menu, and
-creates the two accounts listed below.
+This creates every table, registers the permissions and roles, seeds the menu,
+and creates the two accounts listed below.
 
-**6. Start both applications:**
+**8. Start the API** (in `apps/backend/`)
 
 ```bash
+php artisan serve
+```
+
+Leave it running on `http://localhost:8000`.
+
+**9. Start the frontend** — in a second terminal
+
+```bash
+cd apps/frontend
 npm run dev
 ```
 
-The API runs on `http://localhost:8000` and the interface on
-`http://localhost:5173`. Open the interface and sign in with one of the demo
-accounts.
+Open `http://localhost:5173`.
 
-## Demo accounts
+## Accounts
 
-Created by step 5. Sign in with either:
+Sign in with either:
 
 | Role | Email | Password |
 |---|---|---|
 | Administrator | `admin@food-ordering.test` | `password` |
 | Customer | `customer@food-ordering.test` | `password` |
 
-Registering through the application always creates a customer — the role is
-never read from the request.
+Registering through the application always creates a customer account.
 
 ## Commands
 
