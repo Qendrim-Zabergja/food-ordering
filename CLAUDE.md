@@ -20,25 +20,25 @@ Documented deviations are listed at the bottom of this file — nothing else is 
 ```
 food-ordering/
 ├── apps/
-│   ├── api/      Laravel 13  — the REST API, port 8000
-│   └── web/      React 19    — the SPA, port 5173
-├── package.json  npm workspace root (workspaces: apps/web)
+│   ├── backend/   Laravel 13  — the REST API, port 8000
+│   └── frontend/  React 19    — the SPA, port 5173
+├── package.json  npm workspace root (workspaces: apps/frontend)
 └── CLAUDE.md     this file
 ```
 
-`apps/api` is **not** an npm workspace — it is a PHP application. Laravel's own
+`apps/backend` is **not** an npm workspace — it is a PHP application. Laravel's own
 `package.json` is unused; this API serves JSON only and has no Vite assets.
 
 ### Scaffold tool base_path
 The developer-mcp scaffold tools expect a Laravel root. Pass
-`C:\laragon\www\food-ordering\apps` as `base_path` and `api` as the project —
-artisan and composer.json live at `apps/api/`.
+`C:\laragon\www\food-ordering\apps` as `base_path` and `backend` as the project —
+artisan and composer.json live at `apps/backend/`.
 
 `scaffold_vue` does **not** apply to this project. The frontend is React.
 
 ---
 
-## Backend (apps/api)
+## Backend (apps/backend)
 
 ### Domain organisation
 Models are organised by domain, never flat:
@@ -93,8 +93,8 @@ Roles: `admin` (all permissions) and `customer` (own orders and cart only).
 After adding or removing any permission:
 
 ```bash
-php apps/api/artisan permissions:sync --dry-run   # preview
-php apps/api/artisan permissions:sync             # apply
+php apps/backend/artisan permissions:sync --dry-run   # preview
+php apps/backend/artisan permissions:sync             # apply
 ```
 
 ### API conventions
@@ -107,7 +107,7 @@ php apps/api/artisan permissions:sync             # apply
 
 ---
 
-## Frontend (apps/web)
+## Frontend (apps/frontend)
 
 The global `frontend.md` standards target Vue 3 + `@besa-solutions/besa-components`
 and therefore **do not apply** to this project. The underlying principles carry over
@@ -142,11 +142,11 @@ cosmetic.
 ## Environment
 
 ```bash
-npm run dev         # both applications
-npm run dev:api     # http://localhost:8000
-npm run dev:web     # http://localhost:5173
-npm run test:api    # Pest
-npm run lint        # ESLint
+npm run dev            # both applications
+npm run dev:backend    # http://localhost:8000
+npm run dev:frontend   # http://localhost:5173
+npm run test:backend   # Pest
+npm run lint           # ESLint
 ```
 
 Database: `food_ordering` on MySQL 8 (start MySQL from the Laragon panel).

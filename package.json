@@ -4,18 +4,18 @@
   "version": "0.0.0",
   "description": "Food ordering application - Laravel REST API + React SPA",
   "workspaces": [
-    "apps/web"
+    "apps/frontend"
   ],
   "scripts": {
-    "dev": "concurrently -n api,web -c blue,magenta \"npm:dev:api\" \"npm:dev:web\"",
-    "dev:api": "php apps/api/artisan serve",
-    "dev:web": "npm run dev --workspace web",
-    "build": "npm run build --workspace web",
-    "lint": "npm run lint --workspace web",
-    "test:api": "php apps/api/artisan test",
-    "migrate": "php apps/api/artisan migrate",
-    "seed": "php apps/api/artisan db:seed",
-    "fresh": "php apps/api/artisan migrate:fresh --seed"
+    "dev": "concurrently -n backend,frontend -c blue,magenta \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "php apps/backend/artisan serve",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "build": "npm run build --workspace frontend",
+    "lint": "npm run lint --workspace frontend",
+    "test:backend": "php apps/backend/artisan test",
+    "migrate": "php apps/backend/artisan migrate",
+    "seed": "php apps/backend/artisan db:seed",
+    "fresh": "php apps/backend/artisan migrate:fresh --seed"
   },
   "devDependencies": {
     "concurrently": "^10.0.5"

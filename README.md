@@ -21,8 +21,8 @@ Monorepo containing a Laravel REST API and a React single-page application.
 ```
 food-ordering/
 ├── apps/
-│   ├── api/     Laravel REST API      → http://localhost:8000
-│   └── web/     React SPA             → http://localhost:5173
+│   ├── backend/   Laravel REST API    → http://localhost:8000
+│   └── frontend/  React SPA           → http://localhost:5173
 └── package.json  npm workspace root
 ```
 
@@ -45,13 +45,13 @@ npm install
 ```
 
 ```bash
-composer install --working-dir=apps/api
+composer install --working-dir=apps/backend
 ```
 
 Create the API environment file and generate a key:
 
 ```bash
-cp apps/api/.env.example apps/api/.env && php apps/api/artisan key:generate
+cp apps/backend/.env.example apps/backend/.env && php apps/backend/artisan key:generate
 ```
 
 Create the database (MySQL must be running):
@@ -66,7 +66,7 @@ Run migrations and seed permissions, roles and demo data:
 npm run fresh
 ```
 
-Point the frontend at the API — create `apps/web/.env`:
+Point the frontend at the API — create `apps/frontend/.env`:
 
 ```ini
 VITE_API_URL=http://localhost:8000/api
@@ -83,23 +83,23 @@ npm run dev
 Or separately:
 
 ```bash
-npm run dev:api    # http://localhost:8000
-npm run dev:web    # http://localhost:5173
+npm run dev:backend    # http://localhost:8000
+npm run dev:frontend   # http://localhost:5173
 ```
 
 ## Other commands
 
 ```bash
-npm run lint       # ESLint over the React app
-npm run test:api   # Pest test suite
-npm run migrate    # run pending migrations
+npm run lint           # ESLint over the React app
+npm run test:backend   # Pest test suite
+npm run migrate        # run pending migrations
 ```
 
 After any change to permissions, sync them:
 
 ```bash
-php apps/api/artisan permissions:sync --dry-run   # preview
-php apps/api/artisan permissions:sync             # apply
+php apps/backend/artisan permissions:sync --dry-run   # preview
+php apps/backend/artisan permissions:sync             # apply
 ```
 
 ## Conventions
