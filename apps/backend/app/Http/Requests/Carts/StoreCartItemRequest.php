@@ -25,4 +25,17 @@ class StoreCartItemRequest extends FormRequest
             'quantity' => ['nullable', 'integer', 'min:1', 'max:99'],
         ];
     }
+
+    /**
+     * Without this, a missing category reads "The product.id field is
+     * required." - the field path leaking into something a person reads.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'product.id' => 'product',
+        ];
+    }
 }

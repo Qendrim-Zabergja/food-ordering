@@ -240,3 +240,89 @@
 }
 
 .product__price { font-weight: 700; font-size: 1.05rem; }
+
+/* Cart -------------------------------------------------------------------- */
+.line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.line:last-child { border-bottom: 0; }
+.line__body { flex: 1; min-width: 0; }
+.line__name { font-weight: 600; }
+.line__total { font-weight: 700; min-width: 5rem; text-align: right; }
+
+.qty {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.qty button {
+  border: 0;
+  background: var(--surface);
+  color: var(--text);
+  padding: 0.3rem 0.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.qty button:hover:not(:disabled) { background: var(--surface-2); }
+.qty__value { padding: 0.3rem 0.65rem; min-width: 2.2rem; text-align: center; font-variant-numeric: tabular-nums; }
+
+.totals {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  border-top: 2px solid var(--border);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .split { grid-template-columns: 1fr; }
+}
+
+/* Tables ------------------------------------------------------------------ */
+.table-wrap { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.925rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.6rem 0.7rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tbody tr:hover { background: var(--surface-2); }
+
+.admin-nav { display: flex; gap: 0.35rem; margin-bottom: 1.25rem; flex-wrap: wrap; }

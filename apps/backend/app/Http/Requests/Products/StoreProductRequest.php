@@ -29,4 +29,17 @@ class StoreProductRequest extends FormRequest
             'is_available' => ['nullable', 'boolean'],
         ];
     }
+
+    /**
+     * Without this, a missing category reads "The category.id field is
+     * required." - the field path leaking into something a person reads.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'category.id' => 'category',
+        ];
+    }
 }
